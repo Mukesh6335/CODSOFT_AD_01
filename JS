@@ -1,0 +1,70 @@
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+document.getElementById('addTask').addEventListener('click', addTask);
+
+function renderTasks() {
+    const taskList = document.getElementById('taskList');
+    taskList.innerHTML = '';
+    tasks.forEach((task, index) => {
+        const taskItem = document.createElement('li');
+        taskItem.className = 'task-item';
+        
+        const taskText = document.createElement('span');
+        taskText.textContent = task.title;
+        if (task.completed) {
+            taskText.classList.add('completed');
+        }
+        
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.className = 'edit-button';
+        editButton.onclick = () => editTask(index);
+        
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.className = 'delete-button';
+        deleteButton.onclick = () => deleteTask(index);
+        
+        taskItem.appendChild(taskText);
+        taskItem.appendChild(editButton);
+        taskItem.appendChild(deleteButton);
+        taskList.appendChild(taskItem);
+    });
+}
+
+function addTask() {
+    const title = document.getElementById('taskTitle').value;
+    const description = document.getElementById('taskDescription').value;
+    if (title) {
+        tasks.push({ title, description, completed: false });
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        document.getElementById('taskTitle').value = '';
+        document.getElementById('taskDescription').value = '';
+        renderTasks();
+    } else {
+        alert('Task title is required');
+    }
+}
+
+function editTask(index) {
+    const title = prompt('Edit task title:', tasks[index].title);
+    if (title !== null) {
+        tasks[index].title = title;
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        renderTasks();
+    }
+}
+
+function deleteTask(index) {
+    tasks.splice(index, 1);
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    renderTasks();
+}
+
+function toggleComplete(index) {
+    tasks[index].completed = !tasks[index].completed;
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    renderTasks();
+}
+
+document.addEventListener('DOMContentLoaded', renderTasks);
